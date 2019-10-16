@@ -1,9 +1,10 @@
 package com.fedou.kata.cloudreservation.traindata;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,7 +12,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import static java.util.stream.IntStream.rangeClosed;
@@ -55,8 +55,6 @@ public class TrainDataServer {
         String trainId = ((List<String>) arguments.get("trainId")).get(0);
         TrainDataDTO trainData = trainDatasById.get(trainId);
         List<String> seats = ((List<ArrayList<String>>) arguments.get("seats")).stream().flatMap(Collection::stream).collect(Collectors.toList());
-        System.err.println(String.join(" - ", seats));
-        // String[] seats = seatsArguments.substring(1, seatsArguments.length() - 1).split(",");
         for (String seat : seats) {
             String[] tokens = seat.split("");
             SeatDataDTO bookingSeat = new SeatDataDTO(
