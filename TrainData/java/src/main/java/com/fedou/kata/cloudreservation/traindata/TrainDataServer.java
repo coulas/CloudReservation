@@ -1,17 +1,23 @@
 package com.fedou.kata.cloudreservation.traindata;
 
-import org.springframework.http.MediaType;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import static java.util.stream.IntStream.rangeClosed;
 
 @RestController
 public class TrainDataServer {
-
     private HashMap<String, TrainDataDTO> trainDatasById;
 
     public TrainDataServer() {
@@ -44,15 +50,17 @@ public class TrainDataServer {
         return trainData;
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/reserve", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public void reserve(@RequestParam("trainId") String trainId,
-                        @RequestParam("seats") String [] seats,
-                        @RequestParam("bookingReference") String bookingReference) {
+    @RequestMapping(method = RequestMethod.POST, path = "/reserve", consumes = "application/json")
+    public void reserve(@RequestBody Map<String, Object> arguments) throws IOException {
+        String trainId = ((List<String>) arguments.get("trainId")).get(0);
         TrainDataDTO trainData = trainDatasById.get(trainId);
-        for (String seat : List.of(seats)) {
+        List<String> seats = ((List<ArrayList<String>>) arguments.get("seats")).stream().flatMap(Collection::stream).collect(Collectors.toList());
+        System.err.println(String.join(" - ", seats));
+        // String[] seats = seatsArguments.substring(1, seatsArguments.length() - 1).split(",");
+        for (String seat : seats) {
             String[] tokens = seat.split("");
             SeatDataDTO bookingSeat = new SeatDataDTO(
-                    bookingReference,
+                    (String) arguments.get("bookingReference"),
                     tokens[1],
                     Integer.parseInt(tokens[0]));
             for (int i = 0; i < trainData.seats.length; i++) {
