@@ -2,9 +2,13 @@ package com.fedou.kata.cloudreservation.traindata;
 
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,14 +46,12 @@ class TrainDataServerTest extends TrainDataApplicationTests {
 
     @Test
     void reserve() throws Exception {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("trainId", "express_2000");
-        map.put("seats", new String[]{"5A", "6A"});
-        map.put("bookingReference", "anotherThing");
         mvc.perform(
                 post("/reserve")
-                        .contentType("application/json")
-                        .content(mapper.writeValueAsString(map)))
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .param("trainId", "express_2000")
+                        .param("seats", "5A", "6A")
+                        .param("bookingReference", "anotherThing"))
                 .andDo(print())
                 .andExpect(status().isOk());
 

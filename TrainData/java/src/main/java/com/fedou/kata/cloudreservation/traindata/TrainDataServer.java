@@ -1,11 +1,11 @@
 package com.fedou.kata.cloudreservation.traindata;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.stream.IntStream.rangeClosed;
 
@@ -44,13 +44,15 @@ public class TrainDataServer {
         return trainData;
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/reserve", consumes = "application/json")
-    public void reserve(@RequestBody Map<String, Object> arguments) {
-        TrainDataDTO trainData = trainDatasById.get(arguments.get("trainId"));
-        for (String seat : (List<String>) arguments.get("seats")) {
+    @RequestMapping(method = RequestMethod.POST, path = "/reserve", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public void reserve(@RequestParam("trainId") String trainId,
+                        @RequestParam("seats") String [] seats,
+                        @RequestParam("bookingReference") String bookingReference) {
+        TrainDataDTO trainData = trainDatasById.get(trainId);
+        for (String seat : List.of(seats)) {
             String[] tokens = seat.split("");
             SeatDataDTO bookingSeat = new SeatDataDTO(
-                    (String) arguments.get("bookingReference"),
+                    bookingReference,
                     tokens[1],
                     Integer.parseInt(tokens[0]));
             for (int i = 0; i < trainData.seats.length; i++) {
