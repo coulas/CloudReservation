@@ -47,9 +47,10 @@ Composants feuilles (Bookingreference et TrainData) en serverless
 
 ## Une roadmap :
 1. BookingReference en serverLess
-1. TrainData (en Fat Jar / beanStalk)
+1. TrainData en EC2 (fatJar, bonus: sur beanstalk)
 1. TrainData qui stocke les trains en RDS ou Dynamo
-1. TrainReservation en docker qui expose une page html
-1. la page html pointe sur des images/JS sur S3
+1. TrainReservation en docker
+1. un front end en html stocké/exposé par S3 et qui fournit les formulaire vers TranResa
 1. TrainResa en ECS
+1. Bonus: Route53 pour url vitrine
 
