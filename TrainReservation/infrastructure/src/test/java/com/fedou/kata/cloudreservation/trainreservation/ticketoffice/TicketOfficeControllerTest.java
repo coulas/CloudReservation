@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 class TicketOfficeControllerTest extends TrainReservationApplicationTests {
 
+    @WithMockUser
     @Test
     public void make_a_simple_reservation() throws Exception {
         String trainId = "express_2000";
@@ -51,6 +53,7 @@ class TicketOfficeControllerTest extends TrainReservationApplicationTests {
         );
     }
 
+    @WithMockUser
     @Test
     public void no_seats_found() throws Exception {
         String trainId = "express_2000";
@@ -74,7 +77,7 @@ class TicketOfficeControllerTest extends TrainReservationApplicationTests {
                 "",
                 bookedSeats);
         assertAll(
-                this::thentheTrainDataServerDoNotReceivesReservation,
+                this::thenTheTrainDataServerDoNotReceivesReservation,
                 () -> assertThat(actualReservation)
                         .isEqualToComparingFieldByField(expectedReservation)
         );
@@ -112,19 +115,14 @@ class TicketOfficeControllerTest extends TrainReservationApplicationTests {
     }
 
     private void thenTheTrainDataServerReceives(ReservationDTO reservation) throws JsonProcessingException {
+        String body = "{ \"trainId\": [\"express_2000\"], " +
+                "\"seats\": [[\"1A\", \"2A\"]], " +
+                "\"bookingId\": [\"" + reservation.getBooking_reference() + "\"]}";
         verify(1, postRequestedFor(urlEqualTo("/reserve"))
-                .withRequestBodyPart(aMultipart()
-                        .withName("trainId")
-                        .withBody(containing(reservation.getTrain_id())).build())
-                .withRequestBodyPart(aMultipart()
-                        .withName("seats")
-                        .withBody(containing(getRequestObjectAsJson(reservation.getSeats()))).build())
-                .withRequestBodyPart(aMultipart()
-                        .withName("bookingId")
-                        .withBody(containing(reservation.getBooking_reference())).build()));
+                .withRequestBody(equalToJson(body)));
     }
 
-    private void thentheTrainDataServerDoNotReceivesReservation() {
+    private void thenTheTrainDataServerDoNotReceivesReservation() {
         verify(0, postRequestedFor(urlEqualTo("/reserve")));
     }
 }
