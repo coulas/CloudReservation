@@ -41,6 +41,11 @@
             <version>2.1.3.RELEASE</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- spring rest template for client rest cals -->
         <dependency>
             <groupId>org.springframework</groupId>
