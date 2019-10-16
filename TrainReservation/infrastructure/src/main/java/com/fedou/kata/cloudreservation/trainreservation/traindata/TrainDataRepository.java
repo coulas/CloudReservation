@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -40,7 +43,10 @@ public class TrainDataRepository implements TrainDataService {
         map.add("trainId", trainId);
         map.add("seats", seats);
         map.add("bookingId", bookingReference);
-        restTemplate.postForLocation(trainDataHost + "/" + trainDataBookingEndPoint, map);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(map, headers);
+        restTemplate.postForLocation(trainDataHost + "/" + trainDataBookingEndPoint, request);
     }
 
     @Override
