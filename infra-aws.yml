@@ -1,0 +1,44 @@
+Resources:
+  CloudReservationUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties: 
+      AdminCreateUserConfig: 
+        AllowAdminCreateUserOnly: true
+        InviteMessageTemplate:
+            EmailMessage: Join the dark side {username} {####}, we have cookies...!
+            EmailSubject: Hello {####}!
+      AutoVerifiedAttributes: 
+        - email
+      EmailConfiguration: 
+        EmailSendingAccount: COGNITO_DEFAULT
+        ReplyToEmailAddress: no-reply@arolla.fr
+      EmailVerificationMessage: Please verify {####} {username}!
+      EmailVerificationSubject: Email verification
+      Policies: 
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+          TemporaryPasswordValidityDays: 90
+      UsernameAttributes: 
+        - email
+      UserPoolName: cloud-reservation-user-pool
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        - openid
+      CallbackURLs:
+        - http://localhost:8080/login/oauth2/code/cognito
+      ClientName: cloud-reservation-back
+      GenerateSecret: true
+      LogoutURLs:
+        - http://localhost:8080/logout
+      RefreshTokenValidity: 1
+      UserPoolId: !Ref CloudReservationUserPool
+
